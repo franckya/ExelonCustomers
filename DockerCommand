@@ -1,0 +1,7 @@
+docker run -p 80:80 \
+-e POSTGRES_DB=exelon_db \
+-e POSTGRES_USER=exelon_user \
+-e POSTGRES_PASSWORD=securepassword \
+-e POSTGRES_HOST=localhost \
+-e NAME=World \
+exelon-checkin-app
