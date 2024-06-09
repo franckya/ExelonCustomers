@@ -1,0 +1,19 @@
+az commands: 
+
+az login
+az group create --name exelon-rg --location eastus
+az acr create --resource-group exelon-rg --name exelonacr --sku Basic
+az acr login --name exelonacr
+
+docker commands  to tage and push: 
+
+docker tag exelon-checkin-app exelonacr.azurecr.io/exelon-checkin-app:v1
+docker push exelonacr.azurecr.io/exelon-checkin-app:v1
+
+az commands: 
+az appservice plan create --name exelon-plan --resource-group exelon-rg --sku B1 --is-linux
+az webapp create --resource-group exelon-rg --plan exelon-plan --name exelon-checkin-app --deployment-container-image-name exelonacr.azurecr.io/exelon-checkin-app:v1
+az webapp config appsettings set --resource-group exelon-rg --name exelon-checkin-app --settings POSTGRES_DB=exelon_db POSTGRES_USER=exelon_user POSTGRES_PASSWORD=securepassword POSTGRES_HOST=your_postgresql_host NAME=World
+az postgres server create --resource-group exelon-rg --name exelon-postgres --location eastus --admin-user exelon_user --admin-password securepassword --sku-name B_Gen5_1
+az postgres server firewall-rule create --resource-group exelon-rg --server exelon-postgres --name AllowAzureIPs --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+az postgres server show --resource-group exelon-rg --name exelon-postgres --query "fullyQualifiedDomainName" --output tsv
